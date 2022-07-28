@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 )
 
@@ -31,9 +30,21 @@ func main() {
 		}
 		if checker(file) {
 			argument := os.Args[1]
+			if !check(argument) {
+				return
+			}
 			For_Letters(ascii, argument)
 		}
 	}
+}
+
+func check(s string) bool {
+	for _, i := range s {
+		if i < 32 || i > 126 {
+			return false
+		}
+	}
+	return true
 }
 
 func checker(a string) bool {
@@ -56,14 +67,25 @@ func checker(a string) bool {
 }
 
 func For_Letters(s []string, a string) {
-	h := regexp.MustCompile(`^\s+?$`)
-	if len(a) > 0 && h.MatchString(a) == false {
+	if len(a) > 0 {
 		e := map[rune][]string{}
 		var b string
 		var q rune = 32
+		count := 0
 		for i := 1; i < len(s); i += 9 {
 			e[q] = s[i : i+8]
 			q++
+		}
+		for _, v := range a {
+			if string(v) == "\\" {
+				count++
+			}
+		}
+		if count*2 == len(a) {
+			for i := 0; i < count; i++ {
+				fmt.Println()
+			}
+			return
 		}
 		k := strings.ReplaceAll(a, "\\n", "\n")
 		l := strings.Split(k, "\n")
